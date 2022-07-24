@@ -1,0 +1,6 @@
+make.exe --dry-run --always-make --keep-going --print-directory
+make: Entering directory 'c:/Users/federico/Desktop/borrar/ardpicprog/host'
+g++ main.cpp hexfile.cpp serialport.cpp serialport_win.cpp -o ardpicprog.exe
+ardpicprog.exe
+make: Leaving directory 'c:/Users/federico/Desktop/borrar/ardpicprog/host'
+ 

@@ -326,21 +326,21 @@ fputs("\n", stderr);
 
 static void usage(const char *argv0)
 {
-    fprintf(stderr, "Usage: %s --quiet -q --warranty --copying --help -h\n", argv0);
-    fprintf(stderr, "    --device DEVTYPE -d DEVTYPE --pic-serial-port PORT -p PORT\n");
-    fprintf(stderr, "    --input-hexfile INPUT -i INPUT --output-hexfile OUTPUT -o OUTPUT\n");
-    fprintf(stderr, "    --ihx8m --ihx16 --ihx32 --cc-hexfile CCFILE -c CCFILE --skip-ones\n");
-    fprintf(stderr, "    --erase --burn --force-calibration --list-devices --speed SPEED\n");
+    // fprintf(stderr, "Usage: %s --quiet -q --warranty --copying --help -h\n", argv0);
+    // fprintf(stderr, "    --device DEVTYPE -d DEVTYPE --pic-serial-port PORT -p PORT\n");
+    // fprintf(stderr, "    --input-hexfile INPUT -i INPUT --output-hexfile OUTPUT -o OUTPUT\n");
+    // fprintf(stderr, "    --ihx8m --ihx16 --ihx32 --cc-hexfile CCFILE -c CCFILE --skip-ones\n");
+    // fprintf(stderr, "    --erase --burn --force-calibration --list-devices --speed SPEED\n");
 }
 
 static void header()
 {
-    fprintf(stderr, "Ardpicprog version %s, Copyright (c) 2012 Southern Storm Pty Ltd.\n", ARDPICPROG_VERSION);
-    fprintf(stderr, "Ardpicprog comes with ABSOLUTELY NO WARRANTY; for details\n");
-    fprintf(stderr, "type `ardpicprog --warranty'.  This is free software,\n");
-    fprintf(stderr, "and you are welcome to redistribute it under certain conditions;\n");
-    fprintf(stderr, "type `ardpicprog --copying' for details.\n");
-    fprintf(stderr, "\n");
+    // fprintf(stderr, "Ardpicprog version %s, Copyright (c) 2012 Southern Storm Pty Ltd.\n", ARDPICPROG_VERSION);
+    // fprintf(stderr, "Ardpicprog comes with ABSOLUTELY NO WARRANTY; for details\n");
+    // fprintf(stderr, "type `ardpicprog --warranty'.  This is free software,\n");
+    // fprintf(stderr, "and you are welcome to redistribute it under certain conditions;\n");
+    // fprintf(stderr, "type `ardpicprog --copying' for details.\n");
+    // fprintf(stderr, "\n");
 }
 
 static void copying()
