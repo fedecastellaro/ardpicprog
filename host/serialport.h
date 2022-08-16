@@ -29,6 +29,8 @@
 #include <termios.h>
 #endif
 
+#define END_OF_TASK 1
+
 typedef std::map<std::string, std::string> DeviceInfoMap;
 
 class SerialPort
@@ -37,7 +39,7 @@ public:
     SerialPort();
     ~SerialPort();
 
-    bool open(const std::string &deviceName, int speed = 9600);
+    bool open(const std::string &deviceName, int speed = 115200);
     void close();
 
     DeviceInfoMap initDevice(const std::string &deviceName);
@@ -78,6 +80,8 @@ private:
     bool fillBuffer();
     void write(const char *data, size_t len);
     bool writePacket(const char *packet, size_t len);
+
+    void show_progressBar(float progress);
 };
 
 #endif

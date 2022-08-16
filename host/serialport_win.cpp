@@ -29,18 +29,25 @@ bool SerialPort::open(const std::string &deviceName, int speed)
     close();
     lastTimeoutSecs = -1;
 
-    // Open the COM port.
     std::string dev(deviceName);
+    // Open the COM port.
+    int aport = atoi(dev.substr(3, 2).c_str());
+
     if (dev.find("/dev/") == 0)
         dev = dev.substr(5);    // Just in case cygwin-style name is specified.
+
+    // This has to be added if COM port is > 9 
+    if (!strncmp("COM", dev.c_str(), 3) && aport > 9 )
+            dev = std::string("\\\\.\\") + dev;
+    
     handle = ::CreateFile(dev.c_str(), GENERIC_READ | GENERIC_WRITE,
                           0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (handle == INVALID_HANDLE_VALUE) {
         DWORD error = ::GetLastError();
         if (error == ERROR_FILE_NOT_FOUND)
-            fprintf(stderr, "%s: No such file or directory\n", deviceName.c_str());
+            fprintf(stderr, "%s: No such file or directory\n", dev.c_str());
         else
-            fprintf(stderr, "%s: Cannot open serial port\n", deviceName.c_str());
+            fprintf(stderr, "%s: Cannot open serial port\n", dev.c_str());
         return false;
     }
 
@@ -144,6 +151,7 @@ bool SerialPort::fillBuffer()
 void SerialPort::write(const char *data, size_t len)
 {
     DWORD written;
+
     if (!::WriteFile(handle, data, len, &written, NULL)) {
         DWORD errors;
         COMSTAT status;

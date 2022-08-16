@@ -3,11 +3,11 @@
 CXX = g++
 CC = gcc-3 -mno-cygwin
 
-TARGET = ardpicprog.exe
+TARGET = C:\Users\federico\Documents\GitHub\FSV-Programmer\Exec\ardpicprog.exe
 VERSION = 0.1.2
 
 SOURCES = main.cpp hexfile.cpp serialport.cpp serialport_win.cpp
-OBJECTS = hexfile.o main.ovc serialport.o serialport_win.o
+OBJECTS = hexfile.o main.o serialport.o serialport_win.o
 
 CXXFLAGS = -g -Wall -DARDPICPROG_VERSION=\"$(VERSION)\"
 
@@ -15,7 +15,7 @@ LDFLAGS += -g -lstdc++
 
 all:
 	$(CXX) $(SOURCES) -o $(TARGET)
-	$(TARGET)
+#	$(TARGET)
 	
 clean:
 	rm -f $(TARGET) $(OBJECTS)

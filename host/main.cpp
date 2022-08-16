@@ -1,20 +1,3 @@
-/*
- * Copyright (C) 2012 Southern Storm Software, Pty Ltd.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,6 +8,7 @@
 
 /* The command-line options are deliberately designed to be compatible
  * with picprog: http://hyvatti.iki.fi/~jaakko/pic/picprog.html */
+
 static struct option long_options[] = {
     {"burn", no_argument, 0, 'b'},
     {"cc-hexfile", required_argument, 0, 'c'},
@@ -70,11 +54,11 @@ bool opt_erase = false;
 bool opt_burn = false;
 bool opt_force_calibration = false;
 bool opt_list_devices = false;
-int opt_speed = 9600;
+int opt_speed = 115200;
 
 #ifndef DEFAULT_PIC_PORT
-#ifdef SERIAL_WIN32
-#define DEFAULT_PIC_PORT    "COM1"
+#ifdef  SERIAL_WIN32
+#define DEFAULT_PIC_PORT    "COM17"
 #elif defined(__CYGWIN__)
 #define DEFAULT_PIC_PORT    "/dev/com1"
 #else
@@ -91,7 +75,6 @@ int opt_speed = 9600;
 #define EXIT_CODE_IO_ERROR          74
 #define EXIT_CODE_UNKNOWN_DEVICE    76
 
-static void usage(const char *argv0);
 static void header();
 static void copying();
 static void warranty();
@@ -107,8 +90,7 @@ int main(int argc, char *argv[])
         opt_port = env;
     if (opt_port.empty())
         opt_port = DEFAULT_PIC_PORT;
-fputs(opt_port.c_str(), stderr);
-fputs("\n", stderr);
+
     while ((opt = getopt_long(argc, argv, "c:d:hi:o:p:q",
                               long_options, 0)) != -1) {
         switch (opt) {
@@ -180,56 +162,45 @@ fputs("\n", stderr);
             break;
         default:
             // Display the help message and exit.
-            if (!opt_quiet)
-                header();
-            usage(argv[0]);
             return EXIT_CODE_USAGE;
         }
     }
 
-    // Print the header.
-    if (!opt_quiet)
-        header();
-
     // Bail out if we don't at least have -i, -o, --erase, or --list-devices.
     if (opt_input.empty() && opt_output.empty() && !opt_erase && !opt_list_devices) {
-        usage(argv[0]);
         return EXIT_CODE_USAGE;
     }
 
     // Cannot use -c without -i.
     if (!opt_cc_output.empty() && opt_input.empty()) {
         fprintf(stderr, "Cannot use --cc-hexfile without also specifying --input-hexfile\n");
-        usage(argv[0]);
         return EXIT_CODE_USAGE;
     }
 
     // If we have -i, but no -c or --burn, then report an error.
     if (!opt_input.empty() && opt_cc_output.empty() && !opt_burn) {
         fprintf(stderr, "Cannot use --input-hexfile without also specifying --cc-hexfile or --burn\n");
-        usage(argv[0]);
         return EXIT_CODE_USAGE;
     }
 
     // Cannot use --burn without -i.
     if (opt_burn && opt_input.empty()) {
         fprintf(stderr, "Cannot use --burn without also specifying --input-hexfile\n");
-        usage(argv[0]);
         return EXIT_CODE_USAGE;
     }
 
     // Will need --burn if doing --force-calibration.
     if (opt_force_calibration && !opt_burn) {
         fprintf(stderr, "Cannot use --force-calibration without also specifying --burn\n");
-        usage(argv[0]);
         return EXIT_CODE_USAGE;
     }
 
     // Try to open the serial port and initialize the programmer.
-    printf("Initializing programmer ...\n");
+    fprintf(stdout, "Initializing FSV programmer ...\n");
+    
     SerialPort port;
     if (!port.open(opt_port, opt_speed))
-        return EXIT_CODE_IO_ERROR;
+            return EXIT_CODE_IO_ERROR;
 
     // Does the user want to list the available devices?
     if (opt_list_devices) {
@@ -322,25 +293,6 @@ fputs("\n", stderr);
 
     // Done.
     return EXIT_CODE_OK;
-}
-
-static void usage(const char *argv0)
-{
-    // fprintf(stderr, "Usage: %s --quiet -q --warranty --copying --help -h\n", argv0);
-    // fprintf(stderr, "    --device DEVTYPE -d DEVTYPE --pic-serial-port PORT -p PORT\n");
-    // fprintf(stderr, "    --input-hexfile INPUT -i INPUT --output-hexfile OUTPUT -o OUTPUT\n");
-    // fprintf(stderr, "    --ihx8m --ihx16 --ihx32 --cc-hexfile CCFILE -c CCFILE --skip-ones\n");
-    // fprintf(stderr, "    --erase --burn --force-calibration --list-devices --speed SPEED\n");
-}
-
-static void header()
-{
-    // fprintf(stderr, "Ardpicprog version %s, Copyright (c) 2012 Southern Storm Pty Ltd.\n", ARDPICPROG_VERSION);
-    // fprintf(stderr, "Ardpicprog comes with ABSOLUTELY NO WARRANTY; for details\n");
-    // fprintf(stderr, "type `ardpicprog --warranty'.  This is free software,\n");
-    // fprintf(stderr, "and you are welcome to redistribute it under certain conditions;\n");
-    // fprintf(stderr, "type `ardpicprog --copying' for details.\n");
-    // fprintf(stderr, "\n");
 }
 
 static void copying()

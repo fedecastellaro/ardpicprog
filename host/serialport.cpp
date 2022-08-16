@@ -121,6 +121,7 @@ bool SerialPort::command(const std::string &cmd)
 {
     std::string line = cmd;
     line += '\n';
+
     write(line.c_str(), line.length());
     std::string response = readLine();
     while (response == "PENDING") {
@@ -174,6 +175,12 @@ bool SerialPort::writeData(unsigned long start, unsigned long end, const unsigne
     unsigned long len = (end - start + 1) * 2;
     unsigned int index;
     unsigned short word;
+    float progress = 0.0;
+    float total = len;
+
+    printf("\n");
+    fflush(stdout);
+    
     if (len == 10) {
         // Cannot use "WRITEBIN" for exactly 10 bytes, so use "WRITE" instead.
         sprintf(buffer, "WRITE %s%04lX %04X %04X %04X %04X %04X",
@@ -195,7 +202,11 @@ bool SerialPort::writeData(unsigned long start, unsigned long end, const unsigne
             return false;
         data += BINARY_TRANSFER_MAX / 2;
         len -= BINARY_TRANSFER_MAX;
+
+        progress = 1 - (float(len)/total); 
+        show_progressBar(progress);
     }
+
     if (len > 0) {
         buffer[0] = (char)len;
         for (index = 0; index < len; index += 2) {
@@ -206,8 +217,17 @@ bool SerialPort::writeData(unsigned long start, unsigned long end, const unsigne
         if (!writePacket(buffer, len + 1))
             return false;
     }
+    progress = 1 - (float(len+index)/total); 
+    show_progressBar(progress);
+
     buffer[0] = (char)0x00; // Terminating packet.
-    return writePacket(buffer, 1);
+    if (writePacket(buffer, 1))
+    {
+        show_progressBar(END_OF_TASK);
+        return true;
+    }
+    else
+        return false;
 }
 
 bool SerialPort::read(char *data, size_t len)
@@ -307,4 +327,26 @@ bool SerialPort::writePacket(const char *packet, size_t len)
     write(packet, len);
     std::string response = readLine();
     return response == "OK";
+}
+
+void SerialPort::show_progressBar(float progress){
+    int barWidth = 70;
+    printf("[");
+    int pos = barWidth * progress;
+    if (pos == barWidth){
+        for (int i = 0; i != barWidth; ++i)
+            printf("#");
+    }
+    else
+    {
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) printf("#");
+            else if (i == pos) printf(">");
+            else printf(" ");
+        }
+    }
+    printf( "] ");
+    printf(" %d%%\r", int(progress * 100.0));
+    fflush(stdout);
+
 }

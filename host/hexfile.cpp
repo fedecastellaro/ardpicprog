@@ -250,7 +250,7 @@ bool HexFile::read(SerialPort *port)
     } else {
         printf("skipped reading id words and fuses,\n");
     }
-    printf("done.\n");
+    printf("Done.\n");
     return true;
 }
 
@@ -277,8 +277,8 @@ bool HexFile::write(SerialPort *port, bool forceCalibration)
     // Write the contents of program memory.
     count = 0;
     if (_programStart <= _programEnd) {
-        printf("Burning program memory,");
-        fflush(stdout);
+       printf("Burning program memory in device...\n");
+
         if (forceCalibration || _reservedStart > _reservedEnd) {
             // Calibration forced or no reserved words to worry about.
             if (!writeBlock(port, _programStart, _programEnd, forceCalibration))
@@ -288,7 +288,7 @@ bool HexFile::write(SerialPort *port, bool forceCalibration)
             if (!writeBlock(port, _programStart, _reservedStart - 1, forceCalibration))
                 return false;
         }
-        reportCount();
+        //reportCount();
     } else {
         printf("Skipped burning program memory,\n");
     }
@@ -316,7 +316,7 @@ bool HexFile::write(SerialPort *port, bool forceCalibration)
         printf("skipped burning id words and fuses,");
     }
 
-    printf("done.\n");
+    printf("Done.\n");
     return true;
 }
 
@@ -326,6 +326,7 @@ bool HexFile::writeBlock(SerialPort *port, Address start, Address end, bool forc
     for (it = blocks.begin(); it != blocks.end(); ++it) {
         Address blockStart = (*it).address;
         Address blockEnd = blockStart + (*it).data.size() - 1;
+
         if (start <= blockEnd && end >= blockStart) {
             const unsigned short *data = &((*it).data.at(0));
             Address overlapStart;
@@ -341,6 +342,7 @@ bool HexFile::writeBlock(SerialPort *port, Address start, Address end, bool forc
                 overlapEnd = end;
             else
                 overlapEnd = blockEnd;
+            
             if (!port->writeData(overlapStart, overlapEnd, data, forceCalibration))
                 return false;
             count += overlapEnd - overlapStart + 1;
